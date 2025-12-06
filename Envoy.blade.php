@@ -34,7 +34,7 @@ runNpm
 generateAssets
 updateSymlinks
 optimizeInstallation
-{{-- # migrateDatabase --}}
+migrateDatabase
 blessNewRelease
 cleanOldReleases
 finishDeploy
@@ -84,8 +84,7 @@ echo "{{ $newReleaseName }}" > public/release-name.txt
 @task('runComposer', ['on' => 'remote'])
 cd {{ $newReleaseDir }};
 {{ logMessage('🚚  Running Composer…') }}
-composer update;
-composer install --prefer-dist --no-scripts -q -o;
+composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader;
 @endtask
 
 @task('runNpm', ['on' => 'remote'])
@@ -130,39 +129,21 @@ cd {{ $newReleaseDir }};
 @endtask
 
 @task('migrateDatabase', ['on' => 'remote'])
-{{-- {{ logMessage('🙈  Migrating database…') }} --}}
-{{-- cd {{ $newReleaseDir }}; --}}
-{{-- {{ $php }} artisan migrate --force; --}}
-cd {{ $newReleaseDir }}
-{{ $php }} artisan migrate --path={{ $currentDir }}/database/migrations/2024_12_04_110719_create_user_roles_table.php
-
+{{ logMessage('🙈  Migrating database…') }}
+cd {{ $newReleaseDir }};
+{{ $php }} artisan migrate --force;
 @endtask
 
 @task('blessNewRelease', ['on' => 'remote'])
 {{ logMessage('🙏  Blessing new release…') }}
 ln -nfs {{ $newReleaseDir }} {{ $currentDir }};
 cd {{ $newReleaseDir }}
-{{-- {{ $php }} artisan horizon:terminate --}}
 {{ $php }} artisan config:clear
 {{ $php }} artisan view:clear
-{{-- {{ $php }} artisan cache:forget spatie.permission.cache --}}
-{{-- {{ $php }} artisan cache:clear --}}
 {{ $php }} artisan schedule:clear-cache
-{{--
-{{ $php }} artisan schedule-monitor:sync
---}}
-
 {{ $php }} artisan queue:restart
 {{ $php }} artisan config:cache
 {{ $php }} artisan storage:link
-{{--{{ $php }} artisan icons:cache--}}
-{{-- {{ $php }} artisan responsecache:clear --}}
-
-{{--
-echo "" | sudo -S /usr/sbin/service php83-fpm reload
---}}
-npm run build
-{{-- sudo supervisorctl restart all --}}
 @endtask
 
 @task('cleanOldReleases', ['on' => 'remote'])
