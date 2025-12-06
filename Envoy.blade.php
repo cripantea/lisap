@@ -164,16 +164,8 @@ cd {{ $currentDir }}
 git pull origin {{ $branch }}
 {{ $php }} artisan config:clear
 {{ $php }} artisan view:clear
-{{-- {{ $php }} artisan cache:clear --}}
 {{ $php }} artisan schedule:clear-cache
-{{ $php }} artisan schedule-monitor:sync
-
 {{ $php }} artisan queue:restart
 {{ $php }} artisan config:cache
-{{ $php }} artisan icons:cache
-{{ $php }} artisan filament:optimize-clear
-
-{{-- {{ $php }} artisan responsecache:clear --}}
-{{-- sudo supervisorctl restart all --}}
 echo "" | sudo -S /usr/sbin/service php8.3-fpm reload
 @endtask
