@@ -1,5 +1,4 @@
 <?php
-phpinfo();
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
