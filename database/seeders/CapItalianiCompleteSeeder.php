@@ -25,7 +25,9 @@ class CapItalianiCompleteSeeder extends Seeder
         }
 
         // Pulisci mappings esistenti
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         CapMapping::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $capData = [
             // AG001 - Mario Rossi - Nord Ovest (Lombardia, Piemonte, Liguria, Valle d'Aosta)

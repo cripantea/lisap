@@ -24,7 +24,9 @@ class TuttiCapItalianiSeeder extends Seeder
         }
 
         // Pulisci mappings esistenti
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         CapMapping::truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Generazione intelligente di tutti i CAP italiani
         $capGenerati = $this->generaCapItaliani();
