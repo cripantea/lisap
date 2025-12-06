@@ -1,0 +1,95 @@
+# Envoy.blade.php.example
+
+Questo è un template di esempio per il file Envoy.blade.php.
+Copia il file reale da piazzole-vismara e modificalo secondo le tue esigenze.
+
+## Configurazione Base
+
+```php
+@servers(['production' => 'user@your-server.com'])
+
+@setup
+    $repository = 'git@github.com:your-username/lisap.git';
+    $releases_dir = '/var/www/lisap/releases';
+    $app_dir = '/var/www/lisap';
+    $release = date('YmdHis');
+    $new_release_dir = $releases_dir .'/'. $release;
+@endsetup
+
+@story('deploy')
+    clone_repository
+    run_composer
+    run_npm
+    update_symlinks
+    migrate_database
+    optimize
+    restart_services
+@endstory
+
+@task('clone_repository')
+    echo 'Cloning repository...'
+    [ -d {{ $releases_dir }} ] || mkdir -p {{ $releases_dir }}
+    git clone --depth 1 {{ $repository }} {{ $new_release_dir }}
+    cd {{ $new_release_dir }}
+    git reset --hard {{ $commit }}
+@endtask
+
+@task('run_composer')
+    echo 'Running composer...'
+    cd {{ $new_release_dir }}
+    composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+@endtask
+
+@task('run_npm')
+    echo 'Building assets...'
+    cd {{ $new_release_dir }}
+    npm ci
+    npm run build
+@endtask
+
+@task('update_symlinks')
+    echo 'Linking storage and .env...'
+    ln -nfs {{ $app_dir }}/storage {{ $new_release_dir }}/storage
+    ln -nfs {{ $app_dir }}/.env {{ $new_release_dir }}/.env
+
+    echo 'Updating current release symlink...'
+    ln -nfs {{ $new_release_dir }} {{ $app_dir }}/current
+@endtask
+
+@task('migrate_database')
+    echo 'Running migrations...'
+    cd {{ $new_release_dir }}
+    php artisan migrate --force
+@endtask
+
+@task('optimize')
+    echo 'Optimizing...'
+    cd {{ $new_release_dir }}
+    php artisan optimize
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+@endtask
+
+@task('restart_services')
+    echo 'Restarting services...'
+    sudo systemctl restart php8.3-fpm
+    sudo systemctl reload nginx
+@endtask
+```
+
+## Uso
+
+```bash
+# Deploy
+envoy run deploy
+
+# Con branch specifico
+envoy run deploy --branch=develop
+
+# Rollback
+envoy run rollback
+```
+
+Vedi ENVOY_SETUP.md per la documentazione completa.
+
