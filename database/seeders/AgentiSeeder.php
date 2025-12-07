@@ -28,9 +28,9 @@ class AgentiSeeder extends Seeder
                     'Parisi', 'Villa', 'Conte', 'Ferraro', 'Fabbri', 'Bianco', 'Marchi', 'Negri', 'Montanari', 'Battaglia'];
 
         // Disabilita foreign key checks per MySQL
-        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+     //   \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Agente::truncate();
-        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+     //   \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         for ($i = 1; $i <= 70; $i++) {
             $nome = $nomi[($i - 1) % count($nomi)];
