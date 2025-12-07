@@ -69,7 +69,7 @@ class DashboardController extends Controller
 
         // Andamento mensile
         $andamentoMensile = Ordine::whereYear('data_ordine', $anno)
-            ->selectRaw("CAST(strftime('%m', data_ordine) AS INTEGER) as mese, COUNT(*) as totale_ordini, SUM(importo_totale) as importo_totale")
+            ->selectRaw('MONTH(data_ordine) as mese, COUNT(*) as totale_ordini, SUM(importo_totale) as importo_totale')
             ->groupBy('mese')
             ->orderBy('mese')
             ->get()
