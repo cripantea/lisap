@@ -31,8 +31,8 @@ class ReportController extends Controller
             'mese' => 'required|integer|min:1|max:12',
         ]);
 
-        $anno = $validated['anno'];
-        $mese = $validated['mese'];
+        $anno = (int) $validated['anno'];
+        $mese = (int) $validated['mese'];
         $nomeFile = "vendite_agenti_{$anno}_{$mese}.csv";
 
         // Genera CSV
@@ -52,8 +52,8 @@ class ReportController extends Controller
             'mese' => 'required|integer|min:1|max:12',
         ]);
 
-        $anno = $validated['anno'];
-        $mese = $validated['mese'];
+        $anno = (int) $validated['anno'];
+        $mese = (int) $validated['mese'];
 
         // Dati per il report
         $agenti = Agente::where('attivo', true)->get();
@@ -104,8 +104,8 @@ class ReportController extends Controller
             'mese' => 'nullable|integer|min:1|max:12',
         ]);
 
-        $anno = $validated['anno'];
-        $mese = $validated['mese'] ?? null;
+        $anno = (int) $validated['anno'];
+        $mese = isset($validated['mese']) ? (int) $validated['mese'] : null;
 
         $query = Ordine::where('agente_id', $agente->id)
             ->whereYear('data_ordine', $anno);
