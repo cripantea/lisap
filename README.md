@@ -1,223 +1,102 @@
-# LISAP - Sistema Gestione Ordini Multi-Piattaforma
+# LISAP — Multi-Platform E-Commerce Order Management
 
-Sistema demo per la gestione di ordini e-commerce da multiple piattaforme (Amazon, eBay, Shopify, TikTok Shop) con integrazione Amazon Logistics e sistema provvigioni per agenti commerciali.
+Demo system for managing e-commerce orders from multiple platforms 
+(Amazon, eBay, Shopify, TikTok Shop) with Amazon Logistics integration 
+and sales agent commission tracking. Built with Laravel 12.
 
-## 🚀 Caratteristiche Principali
+## What it does
 
-### ✅ Funzionalità Implementate (100% Funzionanti)
+A real-world business intelligence and order management platform built for 
+an Italian cosmetics distributor. Aggregates orders from 4 e-commerce 
+platforms, automatically assigns them to sales agents based on Italian 
+postal codes (CAP), calculates commissions, and provides a unified 
+dashboard with monthly statistics and exportable reports.
 
-- **Dashboard Completa** con statistiche in tempo reale
-- **Gestione Ordini** da tutte le piattaforme
-- **Sistema Agenti** con mapping CAP automatico
-- **Calcolo Automatico Provvigioni** in base al CAP del cliente
-- **Statistiche Mensili** per agente e per CAP
-- **Grafici e Report** esportabili
-- **Interfaccia Moderna** con Tailwind CSS e Alpine.js
+## Tech stack
 
-### 🎭 Funzionalità Demo (Simulate ma Pronte per Produzione)
+- **Backend:** PHP 8.2, Laravel 12
+- **Frontend:** Blade, Tailwind CSS, Alpine.js
+- **Charts:** Chart.js
+- **HTTP Client:** Guzzle
+- **Export:** Maatwebsite/Excel
+- **Database:** SQLite (demo) / MySQL (production)
 
-- **Import Ordini** da Amazon, eBay, Shopify, TikTok Shop (con dati mock)
-- **Invio Spedizioni** ad Amazon Logistics (simulato, struttura API pronta)
-- **Tracking Spedizioni** (simulato)
-
-## 📋 Architettura
-
+## Architecture
 ```
-┌─────────────────────────────────────────┐
-│     Dashboard Web (Laravel + Blade)     │
-├─────────────────────────────────────────┤
-│  - Visualizzazione ordini               │
-│  - Gestione spedizioni                  │
-│  - Statistiche per CAP/Agente           │
-│  - Report mensili                       │
-└─────────────────────────────────────────┘
-                    │
-┌───────────────────┴────────────────────┐
-│      Layer di Business Logic           │
-├────────────────────────────────────────┤
-│  - OrdineService                       │
-│  - ProvvigioneService                  │
-│  - AmazonLogisticsService              │
-└────────────────────────────────────────┘
-                    │
-┌───────────────────┴────────────────────┐
-│       Adapters per Piattaforme         │
-├────────────────────────────────────────┤
-│  - AmazonAdapter (mockato)             │
-│  - EbayAdapter (mockato)               │
-│  - ShopifyAdapter (pronto per API)     │
-│  - TikTokAdapter (mockato)             │
-└────────────────────────────────────────┘
-                    │
-┌───────────────────┴────────────────────┐
-│          Database (SQLite)             │
-├────────────────────────────────────────┤
-│  - agenti                              │
-│  - cap_mappings                        │
-│  - ordini                              │
-│  - spedizioni                          │
-│  - provvigioni                         │
-└────────────────────────────────────────┘
+Dashboard (Laravel + Blade)
+        │
+Business Logic Layer
+  - OrdineService
+  - ProvvigioneService  
+  - AmazonLogisticsService
+        │
+Platform Adapters
+  - AmazonAdapter
+  - EbayAdapter
+  - ShopifyAdapter (API-ready)
+  - TikTokAdapter
+        │
+Database
+  - agents, cap_mappings, orders, shipments, commissions
 ```
 
-## 🛠 Installazione
+## Key features
 
+- Unified order dashboard across Amazon, eBay, Shopify, TikTok Shop
+- Automatic sales agent assignment based on Italian postal code (CAP)
+- Commission calculation engine with per-agent percentage rates
+- Monthly and annual commission statistics per agent and per region
+- Amazon Logistics (MCF) shipment integration — simulated, API-ready
+- One-click platform import with real-time feedback
+- Charts and exportable reports
+
+## Screenshots
+
+![Dashboard](screenshots/dashboard.png)
+![Orders](screenshots/orders.png)
+![Commissions](screenshots/commissions.png)
+
+## Demo data included
+
+- 5 sales agents covering different Italian regions
+- 25+ postal codes mapped to agents
+- 18 simulated orders from all platforms
+- Automatic commission calculation for each order
+
+## Setup
 ```bash
-# 1. Clona il repository
-git clone <repository-url>
+git clone https://github.com/cripantea/lisap
 cd lisap
-
-# 2. Installa dipendenze
 composer install
-
-# 3. Copia e configura .env
 cp .env.example .env
 php artisan key:generate
-
-# 4. Esegui migration e seeder
 php artisan migrate:fresh
 php artisan db:seed
 php artisan db:seed --class=OrdiniDemoSeeder
-
-# 5. Avvia il server
 php artisan serve
 ```
 
-Apri il browser su `http://localhost:8000`
+Open [http://localhost:8000](http://localhost:8000)
 
-## 📊 Dati Demo
+## Extending for production
 
-Il sistema viene popolato con:
-- **5 Agenti commerciali** con diverse percentuali provvigione
-- **25+ CAP mappati** su diverse città italiane
-- **18 Ordini** simulati da tutte le piattaforme
-- **Provvigioni calcolate automaticamente** per ogni ordine
+Platform adapters are mock-ready. To connect real APIs:
 
-### Agenti Demo
+**Shopify** — replace `getMockOrders()` in `ShopifyAdapter.php` with live 
+HTTP call using Shopify Admin API.
 
-| Codice | Nome            | Zone Coperte              | % Provvigione |
-|--------|-----------------|---------------------------|---------------|
-| AG001  | Mario Rossi     | Milano, Torino, Genova    | 5.00%         |
-| AG002  | Laura Bianchi   | Venezia, Verona, Bologna  | 5.50%         |
-| AG003  | Giuseppe Verdi  | Roma, Firenze, Perugia    | 4.50%         |
-| AG004  | Anna Ferrari    | Napoli, Bari, Salerno     | 6.00%         |
-| AG005  | Marco Romano    | Palermo, Catania, Cagliari| 5.00%         |
+**Amazon SP-API** — implement OAuth2 flow with Seller Central credentials 
+and connect to Orders API.
 
-## 🎯 Funzionalità Chiave
+**Amazon MCF** — replace `simulaInvioAmazon()` in 
+`AmazonLogisticsService.php` with live MCF fulfillment endpoint.
 
-### 1. Sistema Provvigioni per CAP
+## Production roadmap
 
-Ogni CAP italiano è assegnato a un agente commerciale. Quando arriva un ordine:
-1. Il sistema identifica automaticamente l'agente dal CAP
-2. Calcola la provvigione in base alla percentuale dell'agente
-3. Registra la provvigione per il mese corrente
-4. Genera statistiche mensili e annuali
-
-### 2. Import Multi-Piattaforma
-
-```php
-// Esempio di import da Shopify
-$adapter = new ShopifyAdapter();
-$orders = $adapter->fetchOrders(['created_after' => '2024-12-01']);
-foreach ($orders as $rawOrder) {
-    $orderData = $adapter->normalizeOrder($rawOrder);
-    $ordineService->creaOrdine($orderData);
-}
-```
-
-### 3. Integrazione Amazon Logistics
-
-```php
-// Esempio invio spedizione
-$amazonLogistics = new AmazonLogisticsService();
-$spedizione = $amazonLogistics->inviaSpedizione($ordine);
-// Restituisce tracking number e dettagli spedizione
-```
-
-## 📱 Schermate Principali
-
-### Dashboard
-- Totale ordini e fatturato
-- Grafici per piattaforma
-- Andamento mensile
-- Top agenti e top CAP
-
-### Ordini
-- Lista completa con filtri avanzati
-- Dettaglio ordine con info cliente e agente
-- Invio diretto ad Amazon Logistics
-
-### Import
-- Pulsanti per ogni piattaforma
-- Importazione one-click
-- Feedback in tempo reale
-
-### Provvigioni
-- Statistiche per CAP
-- Dettaglio per agente
-- Grafici mensili
-- Export report (pronto per implementazione)
-
-## 🔧 Estensione per Produzione
-
-### Per attivare API reali:
-
-**Shopify:**
-```php
-// In ShopifyAdapter.php, sostituire getMockOrders() con:
-$response = Http::withBasicAuth($this->apiKey, $this->apiSecret)
-    ->get("https://{$this->shopDomain}/admin/api/2024-01/orders.json");
-return $response->json()['orders'];
-```
-
-**Amazon SP-API:**
-```php
-// Richiedere credenziali Seller Central
-// Implementare OAuth2 flow
-// Usare SP-API Order API
-```
-
-**Amazon Logistics (MCF):**
-```php
-// In AmazonLogisticsService.php
-// Sostituire simulaInvioAmazon() con chiamata HTTP reale
-$response = Http::withToken($this->accessToken)
-    ->post($this->apiEndpoint . '/fba/outbound/2020-07-01/fulfillmentOrders', $payload);
-```
-
-## 🛡 Note Sicurezza per Demo
-
-- ✅ Nessuna API key committata
-- ✅ Dati completamente mockati
-- ✅ Database locale SQLite
-- ✅ Tutte le simulazioni chiaramente indicate nell'UI
-
-## 📦 Pacchetti Utilizzati
-
-- **Laravel 12** - Framework PHP
-- **Maatwebsite/Excel** - Export dati (pronto all'uso)
-- **Guzzle** - HTTP client per API
-- **Tailwind CSS** - Styling
-- **Alpine.js** - Interattività frontend
-- **Chart.js** - Grafici
-
-## 📝 TODO per Produzione
-
-- [ ] Implementare autenticazione utenti
-- [ ] Connettere API reali piattaforme
-- [ ] Attivare Amazon SP-API e MCF
-- [ ] Implementare code per import asincroni
-- [ ] Aggiungere notifiche email
-- [ ] Sistema export PDF/Excel
-- [ ] Multi-tenancy per più aziende
-- [ ] API REST per app mobile
-
-## 🤝 Supporto
-
-Questo è un progetto demo completo e funzionante. Tutte le funzionalità core sono implementate e testate.
-Le integrazioni con servizi esterni sono simulate ma l'architettura è pronta per l'integrazione reale.
-
----
-
-**Sviluppato con Laravel 12 - Demo Ready 🚀**
-
+- [ ] User authentication
+- [ ] Real platform API connections
+- [ ] Async import queues
+- [ ] Email notifications
+- [ ] PDF/Excel export
+- [ ] Multi-tenancy support
+- [ ] REST API for mobile app
